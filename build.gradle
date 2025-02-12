@@ -1,0 +1,50 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    downloadJars
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    //downloadJars 'group:artifact:version'
+    downloadJars 'org.liquibase:liquibase-core:4.31.0'
+}
+
+task downloadAndCopyJars(type: Copy) {
+    from configurations.downloadJars
+    into file("./out")
+}
+
+task copyFiles(type: Copy) {
+    dependsOn downloadAndCopyJars
+    from './src/main/resources'
+    into './out'
+
+    rename { fileName ->
+        if (fileName == 'changelog.yaml') {
+            return 'changelog_0001.yaml'
+        }
+        return fileName
+    }
+}
+
+task zipOutFolder(type: Zip) {
+    dependsOn copyFiles
+    from "$projectDir/out"
+    archiveFileName = "out.zip"
+    destinationDirectory = file("$projectDir")
+}
+
+test {
+    useJUnitPlatform()
+}
