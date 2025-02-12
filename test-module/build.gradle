@@ -45,8 +45,16 @@ task zipLiquibaseArchive(type: Zip) {
     destinationDirectory = file("$projectDir")
 }
 
+task cleanOut(type: Delete) {
+    delete "$projectDir/out", "$projectDir/out.zip"
+}
+
 tasks.build {
     dependsOn zipLiquibaseArchive
+}
+
+tasks.clean {
+    dependsOn cleanOut
 }
 
 test {

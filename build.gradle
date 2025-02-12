@@ -45,6 +45,10 @@ task zipOutFolder(type: Zip) {
     destinationDirectory = file("$projectDir")
 }
 
+task cleanOut(type: Delete) {
+    delete "$projectDir/out", "$projectDir/out.zip"
+}
+
 test {
     useJUnitPlatform()
 }
