@@ -10,23 +10,23 @@ repositories {
 }
 
 configurations {
-    downloadJars
+    downloadLiquibaseJars
 }
 
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     //downloadJars 'group:artifact:version'
-    downloadJars 'org.liquibase:liquibase-core:4.31.0'
+    downloadLiquibaseJars 'org.liquibase:liquibase-core:4.31.0'
 }
 
-task downloadAndCopyJars(type: Copy) {
-    from configurations.downloadJars
+task downloadAndCopyLiquibaseJars(type: Copy) {
+    from configurations.downloadLiquibaseJars
     into file("./out")
 }
 
-task copyFiles(type: Copy) {
-    dependsOn downloadAndCopyJars
+task copyLiquibaseFiles(type: Copy) {
+    dependsOn downloadAndCopyLiquibaseJars
     from './src/main/resources'
     into './out'
 
@@ -38,15 +38,15 @@ task copyFiles(type: Copy) {
     }
 }
 
-task zipOutFolder(type: Zip) {
-    dependsOn copyFiles
+task zipLiquibaseArchive(type: Zip) {
+    dependsOn copyLiquibaseFiles
     from "$projectDir/out"
     archiveFileName = "out.zip"
     destinationDirectory = file("$projectDir")
 }
 
 tasks.build {
-    dependsOn zipOutFolder
+    dependsOn zipLiquibaseArchive
 }
 
 test {
