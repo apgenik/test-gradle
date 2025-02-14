@@ -20,6 +20,30 @@ dependencies {
     downloadLiquibaseJars 'org.liquibase:liquibase-core:4.31.0'
 }
 
+// Объединенная задача
+task processLiquibase(type: Zip) {
+    // Шаг 1: Загрузка и копирование JAR-файлов
+    from(configurations.downloadLiquibaseJars) {
+        into './'
+    }
+
+    // Шаг 2: Копирование и переименование файлов из resources
+    from('./src/main/resources') {
+        into './'
+        rename { fileName ->
+            if (fileName == 'changelog.yaml') {
+                return 'changelog_0001.yaml'
+            }
+            return fileName
+        }
+    }
+
+    // Шаг 3: Архивирование
+    archiveFileName = "out.zip"
+    destinationDirectory = file("$projectDir")
+
+}
+
 task downloadAndCopyLiquibaseJars(type: Copy) {
     from configurations.downloadLiquibaseJars
     into file("./out")
