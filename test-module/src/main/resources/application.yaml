@@ -1,1 +1,3 @@
-version: 12-02-2025
+spring:
+  application:
+    name: test-module-app
