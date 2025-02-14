@@ -1,5 +1,16 @@
 plugins {
     id 'java'
+    id 'application'
+}
+
+application {
+    mainClass = 'org.example.Main' // Указываем главный класс для плагина application
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'org.example.Main'
+    }
 }
 
 group = 'org.example'
@@ -21,7 +32,7 @@ dependencies {
 }
 
 // Объединенная задача
-task processLiquibase(type: Zip) {
+tasks.register('processLiquibase', Zip) {
     // Шаг 1: Загрузка и копирование JAR-файлов
     from(configurations.downloadLiquibaseJars) {
         into './'
@@ -44,12 +55,12 @@ task processLiquibase(type: Zip) {
 
 }
 
-task downloadAndCopyLiquibaseJars(type: Copy) {
+tasks.register('downloadAndCopyLiquibaseJars', Copy) {
     from configurations.downloadLiquibaseJars
     into file("./out")
 }
 
-task copyLiquibaseFiles(type: Copy) {
+tasks.register('copyLiquibaseFiles', Copy) {
     dependsOn downloadAndCopyLiquibaseJars
     from './src/main/resources'
     into './out'
@@ -69,7 +80,7 @@ task zipLiquibaseArchive(type: Zip) {
     destinationDirectory = file("$projectDir")
 }
 
-task cleanOut(type: Delete) {
+tasks.register('cleanOut', Delete) {
     delete "$projectDir/out", "$projectDir/out.zip"
 }
 

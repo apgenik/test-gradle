@@ -1,7 +1,17 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
+application {
+    mainClass = 'org.example.Main' // Указываем главный класс для плагина application
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'org.example.Main'
+    }
+}
 group = 'org.example'
 version = '1.0-SNAPSHOT'
 
@@ -20,12 +30,12 @@ dependencies {
     downloadJars 'org.liquibase:liquibase-core:4.31.0'
 }
 
-task downloadAndCopyJars(type: Copy) {
+tasks.register('downloadAndCopyJars', Copy) {
     from configurations.downloadJars
     into file("./out")
 }
 
-task copyFiles(type: Copy) {
+tasks.register('copyFiles', Copy) {
     dependsOn downloadAndCopyJars
     from './src/main/resources'
     into './out'
@@ -38,14 +48,14 @@ task copyFiles(type: Copy) {
     }
 }
 
-task zipOutFolder(type: Zip) {
+tasks.register('zipOutFolder', Zip) {
     dependsOn copyFiles
     from "$projectDir/out"
     archiveFileName = "out.zip"
     destinationDirectory = file("$projectDir")
 }
 
-task cleanOut(type: Delete) {
+tasks.register('cleanOut', Delete) {
     delete "$projectDir/out", "$projectDir/out.zip"
 }
 
